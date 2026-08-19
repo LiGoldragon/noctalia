@@ -13,6 +13,7 @@
 #include "core/timer_manager.h"
 #include "dbus/network/external_ip_service.h"
 #include "dbus/notification/notification_poll_source.h"
+#include "dbus/portal/portal_appearance_service.h"
 #include "hooks/battery_hook_state.h"
 #include "hooks/hook_manager.h"
 #include "idle/idle_grace_overlay.h"
@@ -245,6 +246,7 @@ private:
   NotificationManager m_notificationManager;
   CalendarService m_calendarService;
   std::unique_ptr<SessionBus> m_bus;
+  std::unique_ptr<noctalia::dbus::PortalAppearanceService> m_portalAppearanceService;
   std::unique_ptr<SystemBus> m_systemBus;
   std::unique_ptr<LogindService> m_logindService;
   // Set on PrepareForSleep(true); cleared when the session lock engages (or the lock aborts).

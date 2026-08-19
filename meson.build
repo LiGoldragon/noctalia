@@ -1,5 +1,5 @@
 project('noctalia', ['c', 'cpp'],
-  version: '5.0.0',
+  version: '5.1.0',
   default_options: [
     'cpp_std=c++23',
     'cpp_extensions=false',
@@ -481,6 +481,7 @@ _noctalia_sources = files(
   'src/dbus/notification/notification_poll_source.cpp',
   'src/dbus/notification/notification_service.cpp',
   'src/dbus/power/power_profiles_service.cpp',
+  'src/dbus/portal/portal_appearance_service.cpp',
   'src/dbus/session_bus.cpp',
   'src/dbus/system_bus.cpp',
   'src/dbus/tray/fcitx_status.cpp',
@@ -1140,6 +1141,7 @@ if build_tests
     'desktop_entry_launch',
     'disk_mounts',
     'dock_pinned_apps',
+    'external_appearance',
     'event_link',
     'fcitx_status',
     'google_client_calendar_list',

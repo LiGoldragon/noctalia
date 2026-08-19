@@ -76,7 +76,7 @@ namespace noctalia::cli {
   inline constexpr std::array<std::string_view, 6> kMsgSessionActionChoices{"lock",   "suspend", "lock-and-suspend",
                                                                             "logout", "reboot",  "shutdown"};
   inline constexpr std::array<std::string_view, 2> kMsgTaskbarCycleDirectionChoices{"next", "prev"};
-  inline constexpr std::array<std::string_view, 3> kMsgThemeModeSetModeChoices{"dark", "light", "auto"};
+  inline constexpr std::array<std::string_view, 4> kMsgThemeModeSetModeChoices{"dark", "light", "auto", "external"};
   inline constexpr std::array<std::string_view, 2> kMsgWorkspaceSwitchDirectionChoices{"next", "prev"};
 
   inline constexpr std::array kMsgBarAutoHideSetPositionals{
@@ -684,14 +684,16 @@ namespace noctalia::cli {
     inline constexpr Command themeModeGet{
         "theme-mode-get", "Print the current resolved theme mode", {}, {}, {}, {}, {}, false
     };
-    inline constexpr Command themeModeSet{"theme-mode-set",
-                                          "Set theme mode and persist to settings.toml",
-                                          {},
-                                          {},
-                                          {},
-                                          kMsgThemeModeSetPositionals,
-                                          {},
-                                          false};
+    inline constexpr Command themeModeSet{
+        "theme-mode-set",
+        "Set theme mode (dark, light, auto, or external) and persist to settings.toml",
+        {},
+        {},
+        {},
+        kMsgThemeModeSetPositionals,
+        {},
+        false
+    };
     inline constexpr Command themeModeToggle{
         "theme-mode-toggle", "Toggle theme mode between dark and light", {}, {}, {}, {}, {}, false
     };

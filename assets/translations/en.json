@@ -1413,7 +1413,8 @@
       "theme": {
         "mode": {
           "dark": "Dark",
-          "light": "Light"
+          "light": "Light",
+          "external": "System appearance"
         },
         "source": {
           "built-in": "Built-In",

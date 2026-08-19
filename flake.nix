@@ -39,6 +39,17 @@
         }
       );
 
+      checks = forEachSystem (
+        { pkgs, ... }:
+        {
+          unit = pkgs.callPackage ./nix/package.nix { enableTests = true; };
+          "external-appearance" = pkgs.callPackage ./nix/package.nix {
+            enableTests = true;
+            testFilter = "external_appearance";
+          };
+        }
+      );
+
       devShells = forEachSystem (
         { pkgs, system }:
         {

@@ -48,11 +48,14 @@ namespace noctalia::theme {
 
     std::string resolvedModeName(
         const ThemeConfig& cfg, const LocationConfig& location, std::optional<double> latitude,
-        std::optional<double> longitude
+        std::optional<double> longitude, bool externalIsLight
     ) {
       if (cfg.mode == ThemeMode::Auto) {
         const auto eval = day_night_schedule::evaluate(location, latitude, longitude);
         return eval.night ? "dark" : "light";
+      }
+      if (cfg.mode == ThemeMode::External) {
+        return externalIsLight ? "light" : "dark";
       }
       return cfg.mode == ThemeMode::Light ? "light" : "dark";
     }
@@ -269,7 +272,10 @@ namespace noctalia::theme {
   } // namespace
 
   ThemeService::ThemeService(ConfigService& config, HttpClient& httpClient)
-      : m_config(config), m_httpClient(httpClient) {}
+      : m_config(config), m_httpClient(httpClient) {
+    const auto persisted = m_config.stateString("theme", "external_mode");
+    m_externalIsLight = persisted.has_value() && *persisted == "light";
+  }
 
   void ThemeService::apply() { resolveAndSet(/*animate=*/false); }
 
@@ -304,6 +310,16 @@ namespace noctalia::theme {
     }
   }
 
+  void ThemeService::setExternalMode(bool isLight) {
+    if (m_externalIsLight == isLight) {
+      return;
+    }
+    m_externalIsLight = isLight;
+    if (m_config.config().theme.mode == ThemeMode::External) {
+      resolveAndSet(/*animate=*/true);
+    }
+  }
+
   void ThemeService::toggleLightDark() {
     const auto next = m_isLightMode ? ThemeMode::Dark : ThemeMode::Light;
     // Persist via ConfigService → StateService. The resulting overrides-change
@@ -322,6 +338,9 @@ namespace noctalia::theme {
       next = ThemeMode::Auto;
       break;
     case ThemeMode::Auto:
+      next = ThemeMode::Dark;
+      break;
+    case ThemeMode::External:
       next = ThemeMode::Dark;
       break;
     }
@@ -457,7 +476,8 @@ namespace noctalia::theme {
   void ThemeService::resolveAndSet(bool animate) {
     profiling::ScopedTimer t(kLog, "theme: resolveAndSet");
     const auto& cfg = m_config.config().theme;
-    const std::string mode = resolvedModeName(cfg, m_config.config().location, m_autoLatitude, m_autoLongitude);
+    const std::string mode =
+        resolvedModeName(cfg, m_config.config().location, m_autoLatitude, m_autoLongitude, m_externalIsLight);
     std::optional<ResolvedTheme> resolved;
     if (cfg.source == PaletteSource::Custom && !cfg.customPalette.empty()) {
       const auto path = customPalettePath(cfg.customPalette);
@@ -675,7 +695,7 @@ namespace noctalia::theme {
       const std::string token = StringUtils::trim(args);
       const auto mode = enumFromKey(kThemeModes, token);
       if (!mode.has_value()) {
-        return "error: expected dark, light, or auto\n";
+        return "error: expected dark, light, auto, or external\n";
       }
       m_config.setThemeMode(*mode);
       return "ok\n";

@@ -44,6 +44,8 @@
   autoAddDriverRunpath,
   # DEPRECATED: no longer affects the build; kept for `.override` compat.
   cudaSupport ? config.cudaSupport,
+  enableTests ? false,
+  testFilter ? null,
 }:
 let
   inherit (builtins) head match readFile;
@@ -120,6 +122,9 @@ lib.warnIf cudaSupport
   ];
 
   mesonBuildType = "release";
+  doCheck = enableTests;
+  mesonFlags = lib.optionals enableTests [ "-Dtests=enabled" ];
+  mesonCheckFlags = lib.optionals (testFilter != null) [ testFilter ];
 
   ninjaFlags = [ "-v" ];
 

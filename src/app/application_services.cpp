@@ -29,6 +29,7 @@
 #include "dbus/polkit/polkit_agent.h"
 #include "dbus/polkit/polkit_poll_source.h"
 #include "dbus/polkit/polkit_session_support.h"
+#include "dbus/portal/portal_appearance_service.h"
 #include "dbus/power/power_profiles_service.h"
 #include "dbus/session_bus.h"
 #include "dbus/session_bus_poll_source.h"
@@ -86,6 +87,7 @@
 #include "system/easyeffects_service.h"
 #include "system/keyboard_backlight_service.h"
 #include "system/system_monitor_service.h"
+#include "theme/external_appearance.h"
 #include "ui/app_icon_colorization.h"
 #include "ui/controls/input.h"
 #include "ui/dialogs/color_picker_dialog.h"
@@ -658,10 +660,14 @@ void Application::initStyleThemeAndWayland() {
            {"NOCTALIA_THEME_MODE_CONFIGURED", configuredMode}}
       );
     }
-    syncGSettingsColorScheme(resolvedMode);
+    if (noctalia::theme::shouldSyncGlobalColorScheme(m_themeService.configuredMode())) {
+      syncGSettingsColorScheme(resolvedMode);
+    }
   });
   m_themeService.apply();
-  syncGSettingsColorScheme(m_themeService.resolvedMode());
+  if (noctalia::theme::shouldSyncGlobalColorScheme(m_themeService.configuredMode())) {
+    syncGSettingsColorScheme(m_themeService.resolvedMode());
+  }
   syncScriptApiWallpaperDirectory();
   syncScriptApiShellTimeFormats();
   m_configService.addReloadCallback([this]() { m_themeService.onConfigReload(); }, "theme");
@@ -1438,6 +1444,20 @@ void Application::initSessionBusServices() {
   }
 
   if (m_bus != nullptr) {
+    try {
+      m_portalAppearanceService =
+          std::make_unique<noctalia::dbus::PortalAppearanceService>(*m_bus, m_configService, m_themeService);
+      m_configService.addReloadCallback([this]() {
+        if (m_portalAppearanceService != nullptr) {
+          m_portalAppearanceService->onConfigReload();
+        }
+      });
+      kLog.info("portal appearance integration active");
+    } catch (const std::exception& e) {
+      kLog.warn("portal appearance integration disabled: {}", e.what());
+      m_portalAppearanceService.reset();
+    }
+
     try {
       m_debugService = std::make_unique<DebugService>(*m_bus, m_notificationManager);
       kLog.info("debug service active on dev.noctalia.Debug");

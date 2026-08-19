@@ -33,6 +33,9 @@ namespace noctalia::theme {
     void onWallpaperChange();
     void onAutoSchemeChanged();
     void setAutoCoordinates(std::optional<double> latitude, std::optional<double> longitude);
+    // Applies the portal-owned appearance preference in external mode. The
+    // caller persists observations; ThemeService only renders them.
+    void setExternalMode(bool isLight);
     void toggleLightDark();
     void cycleMode();
     [[nodiscard]] ThemeMode configuredMode() const noexcept;
@@ -87,6 +90,9 @@ namespace noctalia::theme {
     AnimationManager::Id m_transitionAnimId = 0;
     bool m_transitionResolvedCallbackFlushed = false;
     bool m_isLightMode = false;
+    // Dark is the first-run fallback when no portal preference has ever been
+    // observed. The constructor replaces it with the persisted observation.
+    bool m_externalIsLight = false;
     std::optional<double> m_autoLatitude;
     std::optional<double> m_autoLongitude;
     Timer m_autoTimer;

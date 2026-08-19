@@ -195,6 +195,8 @@ namespace {
         return i18n::tr("control-center.shortcuts.dark-mode.light");
       case ThemeMode::Auto:
         return i18n::tr("control-center.shortcuts.dark-mode.auto");
+      case ThemeMode::External:
+        return i18n::tr("settings.options.theme.mode.external");
       }
       return defaultLabel();
     }

@@ -1411,12 +1411,14 @@ enum class ThemeMode : std::uint8_t {
   Dark = 0,
   Light = 1,
   Auto = 2,
+  External = 3,
 };
 
 constexpr EnumOption<ThemeMode> kThemeModes[] = {
     {ThemeMode::Dark, "dark", "settings.options.theme.mode.dark"},
     {ThemeMode::Light, "light", "settings.options.theme.mode.light"},
     {ThemeMode::Auto, "auto", "common.states.auto"},
+    {ThemeMode::External, "external", "settings.options.theme.mode.external"},
 };
 
 struct WallpaperFavorite {

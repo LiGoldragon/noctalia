@@ -129,7 +129,7 @@ recursive                  = true    # include subdirectories when picking rando
 # ── Theme ─────────────────────────────────────────────────────────────────────
 
 [theme]
-mode   = "dark"                     # dark | light | auto
+mode   = "dark"                     # dark | light | auto | external (portal-owned system preference)
 source = "builtin"                  # builtin | wallpaper | community
 builtin = "Noctalia"                # Ayu | Catppuccin | Dracula | Eldritch | Gruvbox |
                                     # Kanagawa | Noctalia | Nord | Rosé Pine | Tokyo-Night
