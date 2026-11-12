@@ -22,6 +22,11 @@ namespace {
 
   constexpr std::size_t kMaxPamMessageBytes = 4096;
 
+  [[nodiscard]] std::string configuredPamService() {
+    const char* service = std::getenv("NOCTALIA_PAM_SERVICE");
+    return service != nullptr && service[0] != '\0' ? service : "login";
+  }
+
   void secureClear(std::string& value) {
     volatile char* ptr = value.empty() ? nullptr : value.data();
     for (std::size_t i = 0; i < value.size(); ++i) {
@@ -231,15 +236,14 @@ namespace {
 
 } // namespace
 
-PamAuthenticator::Result
-PamAuthenticator::authenticateCurrentUser(std::string_view password, std::string_view service) const {
+PamAuthenticator::Result PamAuthenticator::authenticateCurrentUser(std::string_view password) const {
   int pipeFds[2] = {-1, -1};
   if (::pipe2(pipeFds, O_CLOEXEC) != 0) {
     return Result{.success = false, .message = i18n::tr("auth.pam.start-failed")};
   }
 
   std::string passwordCopy(password);
-  std::string serviceCopy(service.empty() ? "login" : std::string(service));
+  std::string serviceCopy = configuredPamService();
 
   const pid_t pid = ::fork();
   if (pid < 0) {

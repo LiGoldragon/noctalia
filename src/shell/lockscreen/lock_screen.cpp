@@ -325,9 +325,8 @@ void LockScreen::onPointerEvent(const PointerEvent& event) {
     m_pointerSurface = event.surface;
   } else if (event.type == PointerEvent::Type::Leave && event.surface == m_pointerSurface) {
     m_pointerSurface = nullptr;
-  } else if (
-      (event.type == PointerEvent::Type::Button || event.type == PointerEvent::Type::Axis) && event.surface != nullptr
-  ) {
+  } else if ((event.type == PointerEvent::Type::Button || event.type == PointerEvent::Type::Axis)
+             && event.surface != nullptr) {
     m_pointerSurface = event.surface;
   }
 
@@ -846,12 +845,11 @@ void LockScreen::tryAuthenticate() {
   updatePromptOnSurfaces();
 
   const PamAuthenticator authenticator = m_authenticator;
-  // Authenticate against the "login" stack. If fingerprint is enabled, strip
-  // pam_fprintd from it: noctalia drives the reader itself over D-Bus and the
-  // two can't share the sensor. See docs/fingerprint.md.
-  const std::string pamService = "login";
-  std::thread([this, generation, password = std::move(password), authenticator, pamService]() mutable {
-    const auto result = authenticator.authenticateCurrentUser(password, pamService);
+  // If fingerprint is enabled, strip pam_fprintd from the selected PAM service:
+  // noctalia drives the reader itself over D-Bus and the two can't share the
+  // sensor. See docs/fingerprint.md.
+  std::thread([this, generation, password = std::move(password), authenticator]() mutable {
+    const auto result = authenticator.authenticateCurrentUser(password);
     clearSensitiveString(password);
     DeferredCall::callLater([this, generation, result]() { handleAuthResult(generation, result); });
   }).detach();

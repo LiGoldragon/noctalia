@@ -1168,6 +1168,7 @@ if build_tests
     'notification_filter',
     'notification_history_utf8',
     'niri_workspace_backend',
+    'pam_authenticator',
     'path_browse',
     'plugin_bindings',
     'plugin_catalog',

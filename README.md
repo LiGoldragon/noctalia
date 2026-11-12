@@ -77,6 +77,12 @@ Current compositor integrations include Niri, Hyprland, Sway, Scroll, Mango, Lab
 Wayland compositors. Other compositors may run Noctalia but can have reduced workspace, window, output, or
 session-action integration depending on the protocols and IPC they expose.
 
+## Lock screen authentication
+
+Noctalia authenticates the current user through the `login` PAM service by default. Distributions and system
+integrators can select a dedicated service by setting `NOCTALIA_PAM_SERVICE` in Noctalia's environment. An unset or
+empty value keeps the `login` default.
+
 ## Scope
 
 Noctalia is a desktop shell, not a full desktop environment. It provides the visual and service layer around your
